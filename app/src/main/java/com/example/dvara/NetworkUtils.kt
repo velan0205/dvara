@@ -1,5 +1,5 @@
 /*
-package com.example.myapplication
+package com.example.dvara
 
 import android.content.Context
 import android.net.ConnectivityManager

@@ -1,23 +1,17 @@
-package com.example.myapplication
+package com.example.dvara
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
-import android.telephony.TelephonyManager
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.dvara.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
 
