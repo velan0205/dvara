@@ -11,6 +11,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dvara.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -65,6 +67,7 @@ class MainActivity : AppCompatActivity() {
 
             Toast.LENGTH_LONG
         ).show()
+
         binding.uploadSpeed.setText(upSpeed)
 
         database = Firebase.database.reference
@@ -74,19 +77,19 @@ class MainActivity : AppCompatActivity() {
 
     fun onSubmit(view: View) {
 
-        writeNewUser("", "", "", "")
+        writeNewUser("", "", "")
 
 
     }
 
-    fun writeNewUser(userId: String, upSpeed: String, timeStamp: String, mobileNumber: String) {
+    fun writeNewUser( upSpeed: String, timeStamp: String, mobileNumber: String) {
         val mobileDetails = Mobile(
             binding.uploadSpeed.text.toString(),
             binding.timeStamp.text.toString(),
             binding.mobileNumber.text.toString()
         )
 
-        database.child("mobile_list").child(userId).setValue(mobileDetails)
+        database.child("mobile_list").child(mobileNumber).setValue(mobileDetails)
     }
 
 

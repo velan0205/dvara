@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "125723317598",
+    "firebase_url": "https://dvara-e4d2c-default-rtdb.firebaseio.com",
+    "project_id": "dvara-e4d2c",
+    "storage_bucket": "dvara-e4d2c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125723317598:android:6449cf6c50ee65e2166bcf",
+        "android_client_info": {
+          "package_name": "com.example.dvara"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "125723317598-ted832ai074rv2seqq6u5gfa67b5edv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfkBDvlBhRKuH_0axeSQ02CRvcKaUB-DI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "125723317598-ted832ai074rv2seqq6u5gfa67b5edv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
