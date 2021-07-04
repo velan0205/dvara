@@ -135,9 +135,13 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         checkNetwork()
+        clearText()
 
     }
 
+    private fun clearText() {
+        binding.mobileNumber.text?.clear()
+    }
 
     private fun checkNetwork(): Boolean {
         /*val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

@@ -76,8 +76,10 @@ class SearchActivity : AppCompatActivity() {
                 database.orderByChild("mobileNumber").startAt(searchText)
                     .removeEventListener(listener)
                 searchText = newText!!
-                if (!newText.isNullOrEmpty())
-                    firebaseUserSearch(newText.toString())
+                if (!newText.isNullOrEmpty()){
+                    firebaseUserSearch(newText.toString())} else{
+                    mobileSearchAdapter.clear()
+                }
                 return false
             }
         })
