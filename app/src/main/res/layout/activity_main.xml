@@ -12,20 +12,32 @@
         android:layout_margin="10dp"
         android:layout_marginTop="50dp">
 
+        <TextView
+            android:id="@+id/internet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/purple_500"
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/uploadSpeedTextField"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/upload_speed"
+            android:layout_marginTop="10dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/internet">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/uploadSpeed"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:enabled="false"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -43,7 +55,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/timeStamp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:enabled="false"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,14 +75,15 @@
                 android:id="@+id/mobileNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:maxLength="10"
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <Button
             android:id="@+id/submitButton"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
