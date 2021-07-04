@@ -8,31 +8,54 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dvara.databinding.ActivitySearchBinding
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class SearchActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchBinding
 
     private lateinit var database: DatabaseReference
+    lateinit var listener: ChildEventListener
+    var searchText = ""
 
     lateinit var mobileSearchAdapter: MobileSearchAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        database = Firebase.database.reference
+        database = Firebase.database.getReference("mobile_list")
 
         mobileSearchAdapter = MobileSearchAdapter()
 
-        val layoutManager1 = LinearLayoutManager(this).apply {
-            orientation = LinearLayoutManager.VERTICAL
-        }
-        with(binding.recyclerView) {
-            adapter = mobileSearchAdapter
+        val layoutManager1 = LinearLayoutManager(this)
+        layoutManager1.orientation = LinearLayoutManager.VERTICAL
+        binding.recyclerView.adapter = mobileSearchAdapter
+        binding.recyclerView.layoutManager = layoutManager1
 
-            layoutManager = layoutManager1
+        listener = object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val mobile = snapshot.getValue<Mobile>()
+                mobileSearchAdapter.addData(mobile!!)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
         }
     }
 
@@ -42,8 +65,6 @@ class SearchActivity : AppCompatActivity() {
         val item = menu?.findItem(R.id.searchView_MenuMain)
         val searchView: SearchView = item?.actionView as SearchView
 
-
-
         searchView.imeOptions = EditorInfo.IME_ACTION_DONE
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -52,10 +73,11 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                Toast.makeText(this@SearchActivity, newText.toString(), Toast.LENGTH_LONG).show()
-                // adapter.filter.filter(newText)
-                 firebaseUserSearch(newText.toString())
-                //database.orderByChild("mobile_list").startAt(newText).endAt(newText + "\uf8ff")
+                database.orderByChild("mobileNumber").startAt(searchText)
+                    .removeEventListener(listener)
+                searchText = newText!!
+                if (!newText.isNullOrEmpty())
+                    firebaseUserSearch(newText.toString())
                 return false
             }
         })
@@ -64,12 +86,14 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun firebaseUserSearch(searchText: String) {
-        // My top posts by number of stars
-        val myTopPostsQuery = database.child("mobile_list").child(searchText)
-            .orderByChild("starCount")
-
-
-        // mobileSearchAdapter.setAdapter(firebaseRecyclerAdapter)
+        mobileSearchAdapter.clear()
+        database.orderByChild("mobileNumber").equalTo(searchText).limitToFirst(1)
+            .get().addOnSuccessListener {
+                for (result in it.children) {
+                    val mobile = result.getValue<Mobile>()
+                    mobileSearchAdapter.addData(mobile!!)
+                }
+            }
     }
 
 }

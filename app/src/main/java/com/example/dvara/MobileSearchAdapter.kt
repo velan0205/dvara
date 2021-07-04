@@ -9,9 +9,10 @@ import com.example.dvara.databinding.MobileListRowBinding
 
 class MobileSearchAdapter() :
     RecyclerView.Adapter<MobileSearchAdapter.ViewHolder>() {
-    var list: List<Mobile> = emptyList()
+    var list: ArrayList<Mobile> = ArrayList()
 
-    inner class ViewHolder(val binding: MobileListRowBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(val binding: MobileListRowBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: MobileListRowBinding =
@@ -36,8 +37,19 @@ class MobileSearchAdapter() :
         return list.size
     }
 
-    fun setData(list: List<Mobile>) {
+    fun setData(list: ArrayList<Mobile>) {
         this.list = list
+        notifyDataSetChanged()
+    }
+
+    fun addData(mobile: Mobile) {
+        this.list.add(mobile)
+        notifyDataSetChanged()
+
+    }
+
+    fun clear() {
+        this.list.clear()
         notifyDataSetChanged()
     }
 
