@@ -12,6 +12,9 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SearchActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchBinding
@@ -19,7 +22,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     lateinit var listener: ChildEventListener
     var searchText = ""
-
+    val simpleDateFormat =
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     lateinit var mobileSearchAdapter: MobileSearchAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,8 +80,9 @@ class SearchActivity : AppCompatActivity() {
                 database.orderByChild("mobileNumber").startAt(searchText)
                     .removeEventListener(listener)
                 searchText = newText!!
-                if (!newText.isNullOrEmpty()){
-                    firebaseUserSearch(newText.toString())} else{
+                if (!newText.isNullOrEmpty()) {
+                    firebaseUserSearch(newText.toString())
+                } else {
                     mobileSearchAdapter.clear()
                 }
                 return false
@@ -89,12 +94,18 @@ class SearchActivity : AppCompatActivity() {
 
     private fun firebaseUserSearch(searchText: String) {
         mobileSearchAdapter.clear()
-        database.orderByChild("mobileNumber").equalTo(searchText).limitToFirst(1)
+        database.orderByChild("mobileNumber").equalTo(searchText)
             .get().addOnSuccessListener {
+                val list = ArrayList<Mobile>()
                 for (result in it.children) {
                     val mobile = result.getValue<Mobile>()
-                    mobileSearchAdapter.addData(mobile!!)
+                    list.add(mobile!!)
                 }
+                list.sortByDescending { it1 ->
+                    simpleDateFormat.parse(it1.timeStamp!!)
+                }
+                if (list.isNotEmpty())
+                    mobileSearchAdapter.addData(list[0])
             }
     }
 

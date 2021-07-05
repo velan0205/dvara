@@ -4,4 +4,6 @@
     <string name="time_stamp">Time Stamp</string>
     <string name="submit">submit</string>
     <string name="mobile_number">Mobile Number</string>
+    <string name="network_available">Network connection is available</string>
+    <string name="network_not_available">Network connection is not available</string>
 </resources>
