@@ -3,6 +3,7 @@ package com.example.dvara
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.example.dvara.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -22,11 +24,8 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private var upSpeed: String = ""
-    //private var downSpeed: String = ""
-
     private var currentDateAndTime: String = ""
-
-
+    private val networkUtil = NetworkUtil(this)
     private lateinit var database: DatabaseReference
 
 
@@ -37,7 +36,49 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        if (checkNetwork()) {
+        networkUtil.result = { isAvailable, type ->
+            runOnUiThread {
+                when (isAvailable) {
+                    true -> {
+                        when (type) {
+                            ConnectionType.Wifi -> {
+                                binding.internet.text = "Network connection is available"
+                                binding.uploadSpeedTextField.visibility = View.VISIBLE
+                                binding.timeStampTextField.visibility = View.VISIBLE
+                                binding.mobileNumberTextField.visibility = View.VISIBLE
+                                binding.submitButton.visibility = View.VISIBLE
+                                val simpleDateFormat =
+                                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                                currentDateAndTime = simpleDateFormat.format(Date())
+                                binding.timeStamp.setText(currentDateAndTime)
+                                // Connectivity Manager
+                                val cm =
+                                    applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                                // Network Capabilities of Active Network
+                                val nc = cm.getNetworkCapabilities(cm.activeNetwork)
+                                // UpSpeed  in MBPS
+                                upSpeed = ((nc?.linkUpstreamBandwidthKbps)?.div(1000)).toString()
+                                binding.uploadSpeed.setText(upSpeed)
+                                database = Firebase.database.reference
+                            }
+                            ConnectionType.Cellular -> {
+                                binding.internet.text = "Network connection is available"
+                            }
+                            else -> {
+                            }
+                        }
+                    }
+                    false -> {
+                        binding.internet.text = "Network connection is not available"
+                        binding.uploadSpeedTextField.visibility = View.GONE
+                        binding.timeStampTextField.visibility = View.GONE
+                        binding.mobileNumberTextField.visibility = View.GONE
+                        binding.submitButton.visibility = View.GONE
+                    }
+                }
+            }
+        }
+       /* if (isInternetAvailable(applicationContext)) {
             binding.internet.text = "Network connection is available"
 
             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -52,30 +93,22 @@ class MainActivity : AppCompatActivity() {
             // Network Capabilities of Active Network
             val nc = cm.getNetworkCapabilities(cm.activeNetwork)
 
-            // DownSpeed in MBPS
-            // downSpeed = ((nc!!.linkDownstreamBandwidthKbps) / 1000).toString()
+
             // UpSpeed  in MBPS
             upSpeed = ((nc?.linkUpstreamBandwidthKbps)?.div(1000)).toString()
-            // Toast to Display DownSpeed and UpSpeed
-            /*Toast.makeText(
-                applicationContext,
 
-                "Up Speed: $upSpeed Mbps \nDown Speed: $downSpeed Mbps",
-
-                Toast.LENGTH_LONG
-            ).show()*/
 
             binding.uploadSpeed.setText(upSpeed)
 
             database = Firebase.database.reference
-        } else if (!checkNetwork()) {
+        } else if (!isInternetAvailable(applicationContext)) {
             binding.internet.text = "Network connection is not available"
             binding.uploadSpeedTextField.visibility = View.GONE
             binding.timeStampTextField.visibility = View.GONE
             binding.mobileNumberTextField.visibility = View.GONE
             binding.submitButton.visibility = View.GONE
 
-        }
+        }*/
 
 
     }
@@ -134,26 +167,46 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkNetwork()
+        networkUtil.register()
         clearText()
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        networkUtil.register()
     }
 
     private fun clearText() {
         binding.mobileNumber.text?.clear()
     }
 
-    private fun checkNetwork(): Boolean {
-        /*val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-        "Network type is " + networkInfo!!.typeName*/
+    private fun isInternetAvailable(context: Context): Boolean {
+        var result = false
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.activeNetwork ?: return false
+            val actNw =
+                connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+            result = when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            connectivityManager.run {
+                connectivityManager.activeNetworkInfo?.run {
+                    result = when (type) {
+                        ConnectivityManager.TYPE_WIFI -> true
+                        ConnectivityManager.TYPE_MOBILE -> true
+                        else -> false
+                    }
 
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-        val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
-        return true
+                }
+            }
+        }
 
-
-        // val isMetered = cm.isActiveNetworkMetered
+        return result
     }
 }
