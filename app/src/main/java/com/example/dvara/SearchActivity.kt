@@ -22,7 +22,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     lateinit var listener: ChildEventListener
     var searchText = ""
-    val simpleDateFormat =
+    private val simpleDateFormat =
         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     lateinit var mobileSearchAdapter: MobileSearchAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
